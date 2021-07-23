@@ -11,7 +11,7 @@ firstboot --disabled
 
 lang en_US.UTF-8
 keyboard us
-timezone UTC
+timezone America/Sao_Paulo
 
 network --bootproto=dhcp
 network  --hostname=<SSH_HOSTNAME>
@@ -38,7 +38,6 @@ curl
 git
 wget
 nginx
-ansible
 python3-pip 
 -microcode_ctl
 -iwl*-firmware

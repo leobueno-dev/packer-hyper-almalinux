@@ -3,6 +3,7 @@
 OPTIND=1
 ENV=$1
 LOGDNA_KEY=__LOGDNA_KEY__
+LOGDNA_TAG=__LOGDNA_TAG__
 
 setupSwap () {
   echo '@> Swap setup [start]' && \
@@ -35,7 +36,7 @@ hostInfo () {
 
 logDNA () {
   sudo logdna-agent -k ${LOGDNA_KEY} && \
-  sudo logdna-agent -t agent,${ENV} && \
+  sudo logdna-agent -t agent,${LOGDNA_TAG} && \
   sudo logdna-agent --hostname $(hostname) && \
   sudo chkconfig logdna-agent on
   sudo service logdna-agent start

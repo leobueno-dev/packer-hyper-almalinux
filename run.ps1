@@ -1,4 +1,4 @@
-param ($SSH_PASSWORD, $SSH_HOSTNAME, $HYPER_VM_NAME, $LOGDNA_KEY, $DOCKER_TOKEN)
+param ($SSH_PASSWORD, $SSH_HOSTNAME, $HYPER_VM_NAME, $LOGDNA_KEY, $LOGDNA_TAG, $DOCKER_TOKEN)
 
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 echo "@>Coping files"
@@ -12,6 +12,7 @@ echo "@>Update Variaveis de usuário"
 (Get-Content var.pkrvars.hcl).replace('<SSH_PASSWORD>',$SSH_PASSWORD) | Set-Content var.pkrvars.hcl
 (Get-Content var.pkrvars.hcl).replace('<HYPER_VM_NAME>',$HYPER_VM_NAME) | Set-Content var.pkrvars.hcl
 (Get-Content var.pkrvars.hcl).replace('<LOGDNA_KEY>',$LOGDNA_KEY) | Set-Content var.pkrvars.hcl
+(Get-Content var.pkrvars.hcl).replace('<LOGDNA_TAG>',$LOGDNA_TAG) | Set-Content var.pkrvars.hcl
 (Get-Content var.pkrvars.hcl).replace('<DOCKER_TOKEN>',$DOCKER_TOKEN) | Set-Content var.pkrvars.hcl
 
 echo "@> Run packer Build"

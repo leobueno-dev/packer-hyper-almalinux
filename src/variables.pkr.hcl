@@ -60,3 +60,10 @@ variable "logdna_key" {
   description = "LogDNA key"
   default     = null
 }
+
+variable "logdna_tag" {
+  type        = string
+  description = "LogDNA Tags"
+  default     = null
+}
+

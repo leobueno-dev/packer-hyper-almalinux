@@ -1,4 +1,5 @@
 hyperv_vm_name  = "<HYPER_VM_NAME>"
 ssh_password    = "<SSH_PASSWORD>"
 logdna_key      = "<LOGDNA_KEY>"
+logdna_tag      = "<LOGDNA_TAG>"
 DOCKER_TOKEN    = "<DOCKER_TOKEN>"

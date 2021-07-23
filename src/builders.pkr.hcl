@@ -26,17 +26,31 @@ build {
     source      = "files/almalinux.install.sh"
   }
 
+  // INSTALAÇÔES
   provisioner "shell" {
     inline = [
       "echo '@> Install dependencies...'",
       "sudo dnf config-manager --add-repo=https://download.docker.com/linux/centos/docker-ce.repo",
+      "sudo rpm --import https://repo.logdna.com/logdna.gpg",
+      "sudo cp -v -r /tmp/logdna.repo /etc/yum.repos.d/",
       "sudo dnf update -y",
-      "sudo dnf install docker-ce docker-ce-cli containerd.io -y",
+      "sudo dnf install docker-ce docker-ce-cli containerd.io logdna-agent -y",
       "sudo dnf autoremove -y",
       "sudo dnf clean all",
       "sudo systemctl enable nginx",
       "sudo systemctl enable docker",
+      "sudo systemctl start nginx",
+      "sudo systemctl start docker",
       "sudo usermod -aG docker $USER"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '@> Docker login...'",
+      "sudo docker login --username=${var.DOCKER_USER} --password=${var.DOCKER_TOKEN}",
+      "sudo docker system info | grep -E 'Username|Registry'",
+      "sudo docker pull logdna/logspout:latest"      
     ]
   }
 
@@ -46,6 +60,15 @@ build {
       "sudo wget --quiet https://github.com/bcicen/ctop/releases/download/v0.7.3/ctop-0.7.3-linux-amd64 -O /usr/local/bin/ctop",
       "sudo chmod +x /usr/local/bin/ctop",
       "ctop -v"
+    ]
+  }
+
+  provisioner "shell" {
+    inline = [
+      "echo '@> Install docker composer...'",
+      "sudo curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose",
+      "sudo chmod +x /usr/local/bin/docker-compose",
+      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
     ]
   }
 
@@ -62,25 +85,13 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo '@> LogDNA INSTALL...'",
-      "sudo rpm --import https://repo.logdna.com/logdna.gpg",
-      "sudo cp -v -r /tmp/logdna.repo /etc/yum.repos.d/",
-      "sudo dnf update -y",
-      "sudo dnf install logdna-agent -y",
-      "sudo dnf autoremove -y",
-      "sudo dnf clean all"
+      "echo @> Ansible install",
+      "pip3 install --user ansible --no-cache-dir"
     ]
   }
 
-  provisioner "shell" {
-    inline = [
-      "echo '@> Install docker composer...'",
-      "sudo curl -L https://github.com/docker/compose/releases/download/1.25.4/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose",
-      "sudo chmod +x /usr/local/bin/docker-compose",
-      "sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
-    ]
-  }
 
+  // CONFIGURAÇÕES
   provisioner "shell" {
     inline = [
       "echo '@> Credentials...'",
@@ -132,27 +143,12 @@ build {
 
   provisioner "shell" {
     inline = [
-      "echo '@> Docker login...'",
-      "docker info",
-      "docker login --username=${var.DOCKER_USER} --password=${var.DOCKER_TOKEN}",
-      "docker system info | grep -E 'Username|Registry'",
-      "docker pull logdna/logspout:latest"      
-    ]
-  }
-
-  provisioner "shell" {
-    inline = [
-      "echo @> Ansible install",
-      "pip3 install --user ansible --no-cache-dir"
-    ]
-  }
-
-  provisioner "shell" {
-    inline = [
       "echo '@> LogDNA CONFIG...'",
       "cp -v /tmp/setup.sh /app/setup.sh",
       "chmod +x /app/setup.sh",
-      "sed -i 's/__LOGDNA_KEY__/${var.logdna_key}/g' /app/setup.sh"
+      "sed -i 's/__LOGDNA_KEY__/${var.logdna_key}/g' /app/setup.sh",
+      "sed -i 's/__LOGDNA_TAG__/${var.logdna_tag}/g' /app/setup.sh",
+      "sh /app/setup.sh"
     ]
   }
 }
