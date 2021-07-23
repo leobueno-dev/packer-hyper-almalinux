@@ -151,12 +151,17 @@ build {
       "sh /app/setup.sh"
     ]
   }
+
+  post-processor "compress" {
+    output            = "packer_${var.hyperv_vm_name}_{{.BuilderType}}.tar.gz"
+    format            = "tar.gz"
+    compression_level = 9
+  }
+
 }
 
 build {
   sources = [
     "sources.hyperv-vmcx.almalinux-8"
   ]
-  
-
 }
