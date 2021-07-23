@@ -1,0 +1,7 @@
+.idea
+packer_cache
+ansible/collections/
+ansible/roles/ezamriy*
+output*/
+**/var.pkrvars.hcl
+**/almalinux-8.inst.ks

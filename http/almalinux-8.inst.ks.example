@@ -1,0 +1,61 @@
+# AlmaLinux 8 kickstart file
+
+url --url https://repo.almalinux.org/almalinux/8/BaseOS/x86_64/kickstart/
+repo --name=BaseOS --baseurl=https://repo.almalinux.org/almalinux/8/BaseOS/x86_64/os/
+repo --name=AppStream --baseurl=https://repo.almalinux.org/almalinux/8/AppStream/x86_64/os/
+
+
+text
+skipx
+firstboot --disabled
+
+lang en_US.UTF-8
+keyboard us
+timezone UTC
+
+network --bootproto=dhcp
+network  --hostname=<SSH_HOSTNAME>
+firewall --disabled
+services --enabled=sshd
+selinux --enforcing
+
+bootloader --location=mbr
+zerombr
+clearpart --all --initlabel
+autopart --type=plain --nohome --noboot
+
+rootpw partithura
+user --name=partithura --plaintext --password <SSH_PASSWORD>
+
+reboot --eject
+
+
+%packages --ignoremissing --excludedocs --instLangs=en_US.UTF-8
+bzip2
+tar
+epel-release
+curl
+git
+wget
+nginx
+ansible
+python3-pip 
+-microcode_ctl
+-iwl*-firmware
+%end
+
+
+# disable kdump service
+%addon com_redhat_kdump --disable
+%end
+
+
+%post
+# allow vagrant user to run everything without a password
+echo "partithura     ALL=(ALL)     NOPASSWD: ALL" >> /etc/sudoers.d/partithura
+
+# see Vagrant documentation (https://docs.vagrantup.com/v2/boxes/base.html)
+# for details about the requiretty.
+sed -i "s/^.*requiretty/# Defaults requiretty/" /etc/sudoers
+yum clean all
+%end
